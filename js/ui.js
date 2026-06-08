@@ -177,7 +177,10 @@ class SkyUI {
         ctx.shadowBlur = 0;
         ctx.fillStyle = 'rgba(255,255,255,0.45)';
         ctx.font = 'bold 12px monospace';
-        ctx.fillText('WASD/Arrows: Move | Space: Shoot | P: Pause', w / 2, h - 30);
+        const mobileHint = this.game.controls.isMobile() ?
+            'Touch & slide to move | Auto-fire | Top buttons: Exit / Pause' :
+            'WASD/Arrows: Move | Space: Shoot | P: Pause';
+        ctx.fillText(mobileHint, w / 2, h - 30);
 
         for (const p of this.menuParticles) {
             ctx.globalAlpha = p.alpha * (p.life / 4);
@@ -253,15 +256,34 @@ class SkyUI {
                     ctx.textAlign = 'right'; ctx.fillStyle = selected ? '#ffffff' : 'rgba(255,255,255,0.6)';
                     ctx.font = '12px monospace'; ctx.fillText(Math.round(settings.sfxVolume * 100) + '%', w - this.sx(50), y);
                     break;
-                case 2: ctx.textAlign = 'left'; ctx.fillText('Graphics: ' + settings.graphicsQuality.toUpperCase(), this.sx(50), y); break;
-                case 3: ctx.textAlign = 'left'; ctx.fillText('Fullscreen: ' + (settings.fullscreen ? 'ON' : 'OFF'), this.sx(50), y); break;
+                case 2: {
+                    const caps = { low: '1x', medium: '2x', high: '3x' };
+                    ctx.textAlign = 'left';
+                    ctx.fillText('Quality: ' + settings.graphicsQuality.toUpperCase() + ' (' + (caps[settings.graphicsQuality] || '?') + ')', this.sx(50), y);
+                    ctx.textAlign = 'right'; ctx.font = '11px monospace';
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                    ctx.fillText('[Tap sides to change]', w - this.sx(50), y);
+                    break;
+                }
+                case 3:
+                    ctx.textAlign = 'left';
+                    if (document.fullscreenEnabled) {
+                        ctx.fillText('Fullscreen: ' + (settings.fullscreen ? 'ON' : 'OFF'), this.sx(50), y);
+                    } else {
+                        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                        ctx.fillText('Fullscreen: N/A', this.sx(50), y);
+                    }
+                    break;
                 case 4: ctx.textAlign = 'left'; ctx.fillText('Mobile Vibration: ' + (settings.mobileVibration ? 'ON' : 'OFF'), this.sx(50), y); break;
                 case 5: ctx.textAlign = 'center'; ctx.fillStyle = selected ? '#ff4444' : 'rgba(255,68,68,0.6)'; ctx.fillText('RESET PROGRESS', w / 2, y); break;
                 case 6: ctx.textAlign = 'center'; ctx.fillStyle = selected ? '#4488ff' : 'rgba(255,255,255,0.7)'; ctx.fillText('Back', w / 2, y); break;
             }
         }
         ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = '12px monospace'; ctx.textAlign = 'center';
-        ctx.fillText('Use Arrow Keys / WASD to navigate, Enter/Space to toggle', w / 2, h - this.sy(20));
+        const settingsHint = this.game.controls.isMobile() ?
+            'Tap left/right side of item to adjust | Volume bars are tappable' :
+            'Arrow keys to navigate, Left/Right to adjust, Enter to toggle';
+        ctx.fillText(settingsHint, w / 2, h - this.sy(20));
         ctx.restore();
     }
 
@@ -412,8 +434,10 @@ class SkyUI {
             { text: '', color: '#ffffff', size: '12px' },
             { text: '─── CONTROLS ───', color: '#4488ff', size: 'bold 14px' },
             { text: 'WASD / Arrows : Move', color: '#88bbff', size: '13px' },
-            { text: 'Space / Click : Shoot', color: '#88bbff', size: '13px' },
-            { text: 'P : Pause | ESC : Back', color: '#88bbff', size: '13px' },
+            { text: 'Touch & slide : Move (mobile)', color: '#88bbff', size: '13px' },
+            { text: 'Space / Auto-fire : Shoot', color: '#88bbff', size: '13px' },
+            { text: 'P / Top-right : Pause', color: '#88bbff', size: '13px' },
+            { text: 'Top-left : Exit | ESC : Back', color: '#88bbff', size: '13px' },
             { text: '', color: '#ffffff', size: '13px' },
             { text: '─── CREDITS ───', color: '#4488ff', size: 'bold 14px' },
             { text: 'Game Design & Development', color: '#ffffff', size: 'bold 13px' },
@@ -460,7 +484,8 @@ class SkyUI {
             else { ctx.fillStyle = '#ff4444'; ctx.shadowBlur = 0; ctx.font = '14px monospace'; ctx.fillText(`${this.planeCosts[i]} coins`, w - this.sx(150), y); }
         }
         ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = '12px monospace'; ctx.textAlign = 'center';
-        ctx.fillText('Arrow keys to navigate, Enter to select/equip', w / 2, h - this.sy(40));
+        const planeHint = this.game.controls.isMobile() ? 'Tap a plane to select/equip' : 'Arrow keys to navigate, Enter to select/equip';
+        ctx.fillText(planeHint, w / 2, h - this.sy(40));
         ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = '14px monospace';
         ctx.fillText('[ Back ]', w / 2, h - this.sy(15));
         ctx.restore();
@@ -497,7 +522,8 @@ class SkyUI {
             ctx.fillStyle = '#00ff88'; ctx.fillRect(this.sx(80), y + 8, (w - this.sx(160)) * (level / 10), 6);
         }
         ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = '12px monospace'; ctx.textAlign = 'center';
-        ctx.fillText('Arrow keys to navigate, Enter to buy', w / 2, h - this.sy(40));
+        const upgradeHint = this.game.controls.isMobile() ? 'Tap an upgrade to buy' : 'Arrow keys to navigate, Enter to buy';
+        ctx.fillText(upgradeHint, w / 2, h - this.sy(40));
         ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = '14px monospace';
         ctx.fillText('[ Back ]', w / 2, h - this.sy(15));
         ctx.restore();
@@ -630,9 +656,13 @@ class SkyUI {
         ctx.save(); ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(0, 0, w, h);
         ctx.textAlign = 'center'; ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff';
-        ctx.font = 'bold 36px monospace'; ctx.fillText('PAUSED', w / 2, this.sy(430));
-        ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.font = 'bold 16px monospace';
-        ctx.fillText('Press P or ESC to resume', w / 2, this.sy(470));
+        ctx.font = 'bold 36px monospace'; ctx.fillText('PAUSED', w / 2, h * 0.35);
+        ctx.shadowBlur = 0;
+        const btnY = h * 0.55;
+        ctx.font = 'bold 20px monospace'; ctx.fillStyle = '#4488ff'; ctx.shadowBlur = 0;
+        ctx.fillText('[ Resume ]', w / 2, btnY);
+        ctx.font = 'bold 16px monospace'; ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.fillText('[ Quit to Menu ]', w / 2, btnY + this.sy(45));
         ctx.restore();
     }
 
@@ -655,14 +685,23 @@ class SkyUI {
         const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save();
         if (jd.active) {
-            ctx.globalAlpha = 0.35; ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 2;
+            const dx = jd.knobX - jd.centerX;
+            const dy = jd.knobY - jd.centerY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            ctx.globalAlpha = 0.3; ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(jd.centerX, jd.centerY);
+            ctx.lineTo(jd.centerX + (dist > 0 ? dx / dist * jd.radius : 0), jd.centerY + (dist > 0 ? dy / dist * jd.radius : 0));
+            ctx.stroke();
+            ctx.globalAlpha = 0.25; ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 2;
             ctx.beginPath(); ctx.arc(jd.centerX, jd.centerY, jd.radius, 0, Math.PI * 2); ctx.stroke();
-            ctx.globalAlpha = 0.3; ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.globalAlpha = 0.2; ctx.fillStyle = 'rgba(255,255,255,0.1)';
             ctx.beginPath(); ctx.arc(jd.centerX, jd.centerY, jd.radius, 0, Math.PI * 2); ctx.fill();
-            ctx.globalAlpha = 0.5; ctx.fillStyle = 'rgba(255,255,255,0.3)';
-            ctx.beginPath(); ctx.arc(jd.knobX, jd.knobY, this.sw(18), 0, Math.PI * 2); ctx.fill();
+            ctx.globalAlpha = 0.6; ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.beginPath(); ctx.arc(jd.knobX, jd.knobY, this.sw(16), 0, Math.PI * 2); ctx.fill();
+            ctx.globalAlpha = 0.5; ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.arc(jd.knobX, jd.knobY, this.sw(16), 0, Math.PI * 2); ctx.stroke();
         }
-        ctx.globalAlpha = 0.35; ctx.fillStyle = '#ffffff'; ctx.font = '24px monospace';
+        ctx.globalAlpha = 0.4; ctx.fillStyle = '#ffffff'; ctx.font = '24px monospace';
         ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
         ctx.fillText('∥', w - this.sw(28), this.sy(28));
         ctx.fillText('✕', this.sw(28), this.sy(28));

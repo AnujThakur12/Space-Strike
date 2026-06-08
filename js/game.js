@@ -84,7 +84,10 @@ class SkyStrike {
     }
 
     _resizeCanvas() {
-        const dpr = Math.min(window.devicePixelRatio || 1, 3);
+        const settings = this.storage ? this.storage.getSettings() : null;
+        const quality = settings ? settings.graphicsQuality : 'high';
+        const caps = { low: 1, medium: 2, high: 3 };
+        const dpr = Math.min(window.devicePixelRatio || 1, caps[quality] || 3);
         const winW = window.innerWidth;
         const winH = window.innerHeight;
         const isMobile = winW < winH;
@@ -189,7 +192,7 @@ class SkyStrike {
 
         this.canvas.addEventListener('touchend', async (e) => {
             e.preventDefault();
-            if (this.state === 'playing') return;
+            if (this.state === 'playing' && !this.paused) return;
             const touch = e.changedTouches[0];
             if (!touch) return;
             const W = this.logicalW, H = this.logicalH;
@@ -201,17 +204,23 @@ class SkyStrike {
             const sy = (v) => (v / 900) * H;
             const sx = (v) => (v / 1600) * W;
 
+            if (this.paused) {
+                const btnY = H * 0.55;
+                if (y > btnY - sy(28) && y < btnY + sy(28)) { this.togglePause(); return; }
+                if (y > btnY + sy(25) && y < btnY + sy(60)) { this.paused = false; this.state = 'menu'; this.audio.stopMusic(); return; }
+            }
+
             if (this.state === 'menu') {
                 const startY = H * 0.45; const itemH = sy(42);
                 for (let i = 0; i < this.ui.menuItems.length; i++) {
                     const itemY = startY + i * itemH;
-                    if (y > itemY - sy(20) && y < itemY + sy(20)) { this.ui.menuSelected = i; this.audio.playMenuClick(); this._handleMenuSelect(i); return; }
+                    if (y > itemY - sy(28) && y < itemY + sy(28)) { this.ui.menuSelected = i; this.audio.playMenuClick(); this._handleMenuSelect(i); return; }
                 }
             }
 
             if (this.gameOver) {
                 const btnY = H * 0.75;
-                if (y > btnY - sy(20) && y < btnY + sy(20)) { this.restartGame(); return; }
+                if (y > btnY - sy(28) && y < btnY + sy(28)) { this.restartGame(); return; }
                 if (y > btnY + sy(25) && y < btnY + sy(60)) { this.state = 'menu'; this.gameOver = false; this.audio.stopMusic(); return; }
             }
 
@@ -219,7 +228,7 @@ class SkyStrike {
                 const startY = sy(90); const itemH = sy(50);
                 for (let i = 0; i < this.ui.planeItems.length; i++) {
                     const itemY = startY + i * itemH;
-                    if (y > itemY - sy(20) && y < itemY + sy(20)) { this.ui.planeMenuSelected = i; this._handlePlaneSelect(i); return; }
+                    if (y > itemY - sy(28) && y < itemY + sy(28)) { this.ui.planeMenuSelected = i; this._handlePlaneSelect(i); return; }
                 }
             }
 
@@ -227,7 +236,7 @@ class SkyStrike {
                 const startY = sy(110); const itemH = sy(50);
                 for (let i = 0; i < this.ui.upgradeItems.length; i++) {
                     const itemY = startY + i * itemH;
-                    if (y > itemY - sy(20) && y < itemY + sy(20)) { this.ui.upgradeMenuSelected = i; this._handleUpgradeBuy(i); return; }
+                    if (y > itemY - sy(28) && y < itemY + sy(28)) { this.ui.upgradeMenuSelected = i; this._handleUpgradeBuy(i); return; }
                 }
             }
 
@@ -235,7 +244,7 @@ class SkyStrike {
                 const startY = sy(120); const itemH = sy(45);
                 for (let i = 0; i < this.ui.settingsItems.length; i++) {
                     const itemY = startY + i * itemH;
-                    if (y > itemY - sy(20) && y < itemY + sy(20)) {
+                    if (y > itemY - sy(28) && y < itemY + sy(28)) {
                         if (i === 5) { this._handleSettingsSelect(5); return; }
                         if (i === 6) { this.state = 'menu'; return; }
                         this.ui.settingsMenuSelected = i;
@@ -278,17 +287,23 @@ class SkyStrike {
             const sy = (v) => (v / 900) * H;
             const sx = (v) => (v / 1600) * W;
 
+            if (this.paused) {
+                const btnY = H * 0.55;
+                if (y > btnY - sy(28) && y < btnY + sy(28)) { this.togglePause(); return; }
+                if (y > btnY + sy(25) && y < btnY + sy(60)) { this.paused = false; this.state = 'menu'; this.audio.stopMusic(); return; }
+            }
+
             if (this.state === 'menu') {
                 const startY = H * 0.45; const itemH = sy(42);
                 for (let i = 0; i < this.ui.menuItems.length; i++) {
                     const itemY = startY + i * itemH;
-                    if (y > itemY - sy(20) && y < itemY + sy(20)) { this.ui.menuSelected = i;  this.audio.playMenuClick(); this._handleMenuSelect(i); return; }
+                    if (y > itemY - sy(28) && y < itemY + sy(28)) { this.ui.menuSelected = i;  this.audio.playMenuClick(); this._handleMenuSelect(i); return; }
                 }
             }
 
             if (this.gameOver) {
                 const btnY = H * 0.75;
-                if (y > btnY - sy(20) && y < btnY + sy(20)) {  this.restartGame(); return; }
+                if (y > btnY - sy(28) && y < btnY + sy(28)) {  this.restartGame(); return; }
                 if (y > btnY + sy(25) && y < btnY + sy(60)) {  this.state = 'menu'; this.gameOver = false; this.audio.stopMusic(); return; }
             }
 
@@ -296,7 +311,7 @@ class SkyStrike {
                 const startY = sy(90); const itemH = sy(50);
                 for (let i = 0; i < this.ui.planeItems.length; i++) {
                     const itemY = startY + i * itemH;
-                    if (y > itemY - sy(20) && y < itemY + sy(20)) { this.ui.planeMenuSelected = i;  this._handlePlaneSelect(i); return; }
+                    if (y > itemY - sy(28) && y < itemY + sy(28)) { this.ui.planeMenuSelected = i;  this._handlePlaneSelect(i); return; }
                 }
             }
 
@@ -304,7 +319,7 @@ class SkyStrike {
                 const startY = sy(110); const itemH = sy(50);
                 for (let i = 0; i < this.ui.upgradeItems.length; i++) {
                     const itemY = startY + i * itemH;
-                    if (y > itemY - sy(20) && y < itemY + sy(20)) { this.ui.upgradeMenuSelected = i;  this._handleUpgradeBuy(i); return; }
+                    if (y > itemY - sy(28) && y < itemY + sy(28)) { this.ui.upgradeMenuSelected = i;  this._handleUpgradeBuy(i); return; }
                 }
             }
 
@@ -312,7 +327,7 @@ class SkyStrike {
                 const startY = sy(120); const itemH = sy(45);
                 for (let i = 0; i < this.ui.settingsItems.length; i++) {
                     const itemY = startY + i * itemH;
-                    if (y > itemY - sy(20) && y < itemY + sy(20)) {
+                    if (y > itemY - sy(28) && y < itemY + sy(28)) {
                         if (i === 5) { this._handleSettingsSelect(5); return; }
                         if (i === 6) { this.state = 'menu'; return; }
                         this.ui.settingsMenuSelected = i;
@@ -390,9 +405,11 @@ class SkyStrike {
                 qi = Math.max(0, Math.min(qs.length - 1, qi + dir));
                 settings.graphicsQuality = qs[qi];
                 this.storage.updateSettings(settings);
+                this._resizeCanvas();
                 break;
             }
             case 3:
+                if (!document.fullscreenEnabled) break;
                 settings.fullscreen = !settings.fullscreen;
                 this.storage.updateSettings(settings);
                 if (settings.fullscreen) document.documentElement.requestFullscreen().catch(() => {});
@@ -722,6 +739,7 @@ class SkyStrike {
                     bullet.active = false;
                     bm.enemyBullets.splice(i, 1);
                     if (tookDmg) {
+                        this._vibrate();
                         this.audio.playPlayerHit();
                         this.effects.shake(4, 0.2);
                         this.effects.addScreenFlash(p.x, p.y, '#ff0000', 0.1);
@@ -740,6 +758,7 @@ class SkyStrike {
             )) {
                 if (p.alive) {
                     p.takeDamage(20);
+                    this._vibrate();
                     this.effects.emitExplosion(enemy.x, enemy.y, 15, '#ff4400', 3, true);
                     enemy.active = false;
                     this.enemyManager.enemies.splice(j, 1);
@@ -756,6 +775,7 @@ class SkyStrike {
             )) {
                 if (p.alive) {
                     p.takeDamage(30);
+                    this._vibrate();
                     this.effects.emitExplosion(p.x, p.y, 10, '#ff0000', 3, false);
                     this.effects.shake(8, 0.3);
                     if (!p.alive) this._onPlayerDeath();
@@ -817,6 +837,12 @@ class SkyStrike {
             this.levelTransitionTimer = 2.5;
             this.ui.notify(`Level ${this.currentLevel} - Prepare!`, '#88bbff');
         }, 1500);
+    }
+
+    _vibrate() {
+        if (navigator.vibrate && this.storage.getSettings().mobileVibration) {
+            navigator.vibrate(10);
+        }
     }
 
     _onPlayerDeath() {

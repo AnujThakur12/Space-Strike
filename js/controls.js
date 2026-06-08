@@ -11,7 +11,6 @@ class SkyControls {
         this.joystickCenter = { x: 0, y: 0 };
         this.joystickRadius = 65;
         this.joystickBaseRadius = 65;
-        this.joystickBaseRadiusRef = 65;
         this.mobile = false;
         this.autoFire = false;
         this.logicalW = canvas.width;
@@ -77,6 +76,15 @@ class SkyControls {
             const x = (touch.clientX - rect.left) * scaleX;
             const y = (touch.clientY - rect.top) * scaleY;
 
+            if (x < this.logicalW * 0.06 && y < this.logicalH * 0.07) {
+                this.exitPressed = true;
+                return;
+            }
+            if (x > this.logicalW * 0.94 && y < this.logicalH * 0.07) {
+                this.pausePressed = true;
+                return;
+            }
+
             this.joystickTouchId = touch.identifier;
             this.joystick.active = true;
             this.joystickCenter.x = x;
@@ -85,14 +93,7 @@ class SkyControls {
             this.joystick.y = y;
             this.joystick.dx = 0;
             this.joystick.dy = 0;
-            this.joystickRadius = this.joystickBaseRadiusRef * (this.logicalW / 1600);
-
-            if (x < this.logicalW * 0.06 && y < this.logicalH * 0.07) {
-                this.exitPressed = true;
-            }
-            if (x > this.logicalW * 0.94 && y < this.logicalH * 0.07) {
-                this.pausePressed = true;
-            }
+            this.joystickRadius = Math.max(65 * (this.logicalW / 1600), 50);
         }
     }
 
@@ -139,9 +140,9 @@ class SkyControls {
 
     getMovement() {
         if (this.joystick.active) {
-            const deadzone = 0.15;
-            let dx = Math.abs(this.joystick.dx) > deadzone ? this.joystick.dx : 0;
-            let dy = Math.abs(this.joystick.dy) > deadzone ? this.joystick.dy : 0;
+            const deadzone = 0.08;
+            const dx = Math.abs(this.joystick.dx) > deadzone ? this.joystick.dx : 0;
+            const dy = Math.abs(this.joystick.dy) > deadzone ? this.joystick.dy : 0;
             return { dx, dy };
         }
 
