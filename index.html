@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Space Strike</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div id="loading-screen">
+        <h1>SPACE STRIKE</h1>
+        <div class="subtitle">Endless Space</div>
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <button class="touch-pause" id="touchPause" aria-label="Pause">||</button>
+
+    <script>
+        window.SKYSTRIKE_API_URL = '';
+    </script>
+    <script src="js/storage.js"></script>
+    <script src="js/assets.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/collision.js"></script>
+    <script src="js/effects.js"></script>
+    <script src="js/bullet.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/enemy.js"></script>
+    <script src="js/boss.js"></script>
+    <script src="js/powerups.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const game = new SkyStrike();
+            game.controls._bindTouchPause = () => {
+                const btn = document.getElementById('touchPause');
+                if (btn) {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (game.state === 'playing' && !game.gameOver) {
+                            game.togglePause();
+                        }
+                    });
+                    btn.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (game.state === 'playing' && !game.gameOver) {
+                            game.togglePause();
+                        }
+                    }, { passive: false });
+                }
+            };
+            game.controls._bindTouchPause();
+        });
+
+        window.addEventListener('error', (e) => {
+            console.error('Space Strike Error:', e.error || e.message);
+        });
+    </script>
+</body>
+
+</html>
