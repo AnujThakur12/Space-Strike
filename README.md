@@ -2,7 +2,7 @@
 
 A modern arcade-style 2D space shooter. Endless levels, epic boss battles, unlockable planes, upgrade systems, and cloud accounts.
 
-## Play Now
+## Play Now (Play in Pc/Laptop for better Experience)
 
 **[spacestrike.netlify.app](https://spacestrike.netlify.app/)**
 
