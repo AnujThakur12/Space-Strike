@@ -25,11 +25,10 @@ A modern arcade-style 2D space shooter. Endless levels, epic boss battles, unloc
 | Key | Action |
 |-----|--------|
 | WASD / Arrows | Move |
-| Space / Click | Shoot |
 | P | Pause |
 | ESC | Pause / Back to menu |
 
-**Mobile:** Left joystick to move, right button to fire.
+**Mobile:**slide in screen to move.
 
 ## Tech
 
