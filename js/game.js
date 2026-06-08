@@ -84,16 +84,23 @@ class SkyStrike {
     }
 
     _resizeCanvas() {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const dpr = Math.min(window.devicePixelRatio || 1, 3);
         const winW = window.innerWidth;
         const winH = window.innerHeight;
         const isMobile = winW < winH;
         if (isMobile) {
-            this.canvas.height = Math.min(winH, 960) * dpr;
-            this.canvas.width = Math.round(this.canvas.height * 9 / 16);
+            this.logicalH = Math.min(winH, 960);
+            this.logicalW = Math.round(this.logicalH * 9 / 16);
         } else {
-            this.canvas.width = Math.min(winW, 1600) * dpr;
-            this.canvas.height = Math.round(this.canvas.width * 9 / 16);
+            this.logicalW = Math.min(winW, 1600);
+            this.logicalH = Math.round(this.logicalW * 9 / 16);
+        }
+        this.canvas.width = this.logicalW * dpr;
+        this.canvas.height = this.logicalH * dpr;
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (this.controls) {
+            this.controls.logicalW = this.logicalW;
+            this.controls.logicalH = this.logicalH;
         }
     }
 
@@ -185,10 +192,10 @@ class SkyStrike {
             if (this.state === 'playing') return;
             const touch = e.changedTouches[0];
             if (!touch) return;
-            const W = this.canvas.width, H = this.canvas.height;
+            const W = this.logicalW, H = this.logicalH;
             const rect = this.canvas.getBoundingClientRect();
-            const scaleX = W / rect.width;
-            const scaleY = H / rect.height;
+            const scaleX = this.logicalW / rect.width;
+            const scaleY = this.logicalH / rect.height;
             const x = (touch.clientX - rect.left) * scaleX;
             const y = (touch.clientY - rect.top) * scaleY;
             const sy = (v) => (v / 900) * H;
@@ -262,7 +269,7 @@ class SkyStrike {
         });
 
         this.canvas.addEventListener('click', async (e) => {
-            const W = this.canvas.width, H = this.canvas.height;
+            const W = this.logicalW, H = this.logicalH;
             const rect = this.canvas.getBoundingClientRect();
             const scaleX = W / rect.width;
             const scaleY = H / rect.height;
@@ -483,9 +490,9 @@ class SkyStrike {
     }
 
     async _handleAccountClick(x, y) {
-        const ui = this.ui; const h = this.canvas.height;
+        const ui = this.ui; const h = this.logicalH;
         const sy = (v) => (v / 900) * h;
-        const sx = (v) => (v / 1600) * this.canvas.width;
+        const sx = (v) => (v / 1600) * this.logicalW;
         if (!this.storage.isLoggedIn()) {
             if (ui.accountState === 'login') {
                 if (y > sy(123) && y < sy(149) && x > sx(480) && x < sx(730)) { ui.loginField = 'username'; return; }
@@ -546,8 +553,8 @@ class SkyStrike {
         this.player.setPlaneStats(planeId);
         this.player.applyUpgrades(this.storage.get('upgrades'));
         this.player.coins = 0;
-        this.player.init(this.canvas.width, this.canvas.height);
-        this.player.reset(this.canvas.width, this.canvas.height);
+        this.player.init(this.logicalW, this.logicalH);
+        this.player.reset(this.logicalW, this.logicalH);
 
         this.enemyManager.clear();
         this.enemyManager.setLevel(1);
@@ -594,6 +601,14 @@ class SkyStrike {
             if (this.state === 'playing') this.togglePause();
         }
 
+        if (this.controls.isExitPressed()) {
+            if (this.state === 'playing') {
+                this.state = 'menu';
+                this.paused = false;
+                this.audio.stopMusic();
+            }
+        }
+
         if (this.state === 'loading') {
             this.state = 'menu';
             return;
@@ -607,7 +622,7 @@ class SkyStrike {
             return;
         }
 
-        this.player.update(dt, this.controls, this.canvas.width, this.canvas.height);
+        this.player.update(dt, this.controls, this.logicalW, this.logicalH);
         this.effects.update(dt);
 
         if (this.player.alive) {
@@ -625,13 +640,13 @@ class SkyStrike {
         this._checkBossSpawn();
 
         if (this.bossActive && this.boss && this.boss.active) {
-            this.boss.update(dt, this.player.x, this.player.y, this.canvas.width, this.canvas.height, this.bulletManager);
+            this.boss.update(dt, this.player.x, this.player.y, this.logicalW, this.logicalH, this.bulletManager);
         } else {
-            this.enemyManager.update(dt, this.player.x, this.player.y, this.canvas.width, this.canvas.height, this.bulletManager);
+            this.enemyManager.update(dt, this.player.x, this.player.y, this.logicalW, this.logicalH, this.bulletManager);
         }
 
         this.bulletManager.update(dt);
-        this.powerUpManager.update(dt, this.canvas.height);
+        this.powerUpManager.update(dt, this.logicalH);
         this._checkCollisions();
     }
 
@@ -641,7 +656,7 @@ class SkyStrike {
             this.bossLevel = true;
             this.bossSpawned = true;
             this.boss = new SkyBoss(this.currentLevel);
-            this.boss.start(this.canvas.width);
+            this.boss.start(this.logicalW);
             this.bossActive = true;
             this.enemyManager.clear();
             this.ui.showBossWarning();
@@ -829,8 +844,8 @@ class SkyStrike {
 
     _render() {
         const ctx = this.ctx;
-        const w = this.canvas.width;
-        const h = this.canvas.height;
+        const w = this.logicalW;
+        const h = this.logicalH;
 
         ctx.clearRect(0, 0, w, h);
 

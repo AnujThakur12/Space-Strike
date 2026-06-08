@@ -6,6 +6,7 @@ class SkyControls {
         this.joystick = { active: false, x: 0, y: 0, dx: 0, dy: 0 };
         this.firePressed = false;
         this.pausePressed = false;
+        this.exitPressed = false;
         this.joystickTouchId = null;
         this.joystickCenter = { x: 0, y: 0 };
         this.joystickRadius = 65;
@@ -13,6 +14,8 @@ class SkyControls {
         this.joystickBaseRadiusRef = 65;
         this.mobile = false;
         this.autoFire = false;
+        this.logicalW = canvas.width;
+        this.logicalH = canvas.height;
 
         this._onKeyDown = this._onKeyDown.bind(this);
         this._onKeyUp = this._onKeyUp.bind(this);
@@ -67,28 +70,27 @@ class SkyControls {
 
     _onTouchStart(e) {
         const rect = this.canvas.getBoundingClientRect();
-        const scaleX = this.canvas.width / rect.width;
-        const scaleY = this.canvas.height / rect.height;
+        const scaleX = this.logicalW / rect.width;
+        const scaleY = this.logicalH / rect.height;
 
         for (const touch of e.changedTouches) {
             const x = (touch.clientX - rect.left) * scaleX;
             const y = (touch.clientY - rect.top) * scaleY;
 
-            this.joystickCenter.x = 0.075 * this.canvas.width;
-            this.joystickCenter.y = this.canvas.height - this.canvas.height * 0.145;
-            this.joystickRadius = this.joystickBaseRadiusRef * (this.canvas.width / 1600);
-            this.joystickBaseRadius = this.joystickRadius;
+            this.joystickTouchId = touch.identifier;
+            this.joystick.active = true;
+            this.joystickCenter.x = x;
+            this.joystickCenter.y = y;
+            this.joystick.x = x;
+            this.joystick.y = y;
+            this.joystick.dx = 0;
+            this.joystick.dy = 0;
+            this.joystickRadius = this.joystickBaseRadiusRef * (this.logicalW / 1600);
 
-            if (x < this.canvas.width * 0.4) {
-                this.joystickTouchId = touch.identifier;
-                this.joystick.active = true;
-                this.joystick.x = this.joystickCenter.x;
-                this.joystick.y = this.joystickCenter.y;
-                this.joystick.dx = 0;
-                this.joystick.dy = 0;
+            if (x < this.logicalW * 0.06 && y < this.logicalH * 0.07) {
+                this.exitPressed = true;
             }
-
-            if (x < this.canvas.width * 0.04 && y < this.canvas.height * 0.07) {
+            if (x > this.logicalW * 0.94 && y < this.logicalH * 0.07) {
                 this.pausePressed = true;
             }
         }
@@ -96,8 +98,8 @@ class SkyControls {
 
     _onTouchMove(e) {
         const rect = this.canvas.getBoundingClientRect();
-        const scaleX = this.canvas.width / rect.width;
-        const scaleY = this.canvas.height / rect.height;
+        const scaleX = this.logicalW / rect.width;
+        const scaleY = this.logicalH / rect.height;
 
         for (const touch of e.changedTouches) {
             const x = (touch.clientX - rect.left) * scaleX;
@@ -160,6 +162,14 @@ class SkyControls {
     isPausePressed() {
         if (this.pausePressed) {
             this.pausePressed = false;
+            return true;
+        }
+        return false;
+    }
+
+    isExitPressed() {
+        if (this.exitPressed) {
+            this.exitPressed = false;
             return true;
         }
         return false;

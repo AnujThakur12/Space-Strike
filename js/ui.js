@@ -1,8 +1,8 @@
 class SkyUI {
-    sx(x) { return (x / 1600) * this.canvas.width; }
-    sy(y) { return (y / 900) * this.canvas.height; }
-    sw(w) { return (w / 1600) * this.canvas.width; }
-    sh(h) { return (h / 900) * this.canvas.height; }
+    sx(x) { return (x / 1600) * this.game.logicalW; }
+    sy(y) { return (y / 900) * this.game.logicalH; }
+    sw(w) { return (w / 1600) * this.game.logicalW; }
+    sh(h) { return (h / 900) * this.game.logicalH; }
     fi(x) { return Math.floor(x); }
     get REF_W() { return 1600; }
     get REF_H() { return 900; }
@@ -63,12 +63,12 @@ class SkyUI {
             p.life -= dt;
             if (p.life <= 0) this.menuParticles.splice(i, 1);
         }
-        const w = this.canvas.width; const isPlaying = this.game.state === 'playing';
+        const w = this.game.logicalW; const isPlaying = this.game.state === 'playing';
         const maxParticles = isPlaying ? 50 : 30;
         if (this.menuParticles.length < maxParticles && Math.random() < (isPlaying ? 0.15 : 0.1)) {
             this.menuParticles.push({
                 x: Math.random() * w,
-                y: this.canvas.height + 10,
+                y: this.game.logicalH + 10,
                 vx: (Math.random() - 0.5) * (isPlaying ? 25 : 15),
                 vy: -(isPlaying ? 30 + Math.random() * 50 : 20 + Math.random() * 30),
                 size: 1 + Math.random() * (isPlaying ? 3 : 2.5),
@@ -105,7 +105,7 @@ class SkyUI {
         }
     }
     renderWatermark() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save();
         ctx.fillStyle = 'rgba(255,255,255,0.2)';
         ctx.font = '10px monospace';
@@ -118,8 +118,8 @@ class SkyUI {
 
     renderMainMenu() {
         const ctx = this.ctx;
-        const w = this.canvas.width;
-        const h = this.canvas.height;
+        const w = this.game.logicalW;
+        const h = this.game.logicalH;
 
         ctx.save();
         ctx.textBaseline = 'middle';
@@ -191,7 +191,7 @@ class SkyUI {
         ctx.restore();
     }
     renderHighScores() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save();
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(0, 0, w, h);
@@ -219,7 +219,7 @@ class SkyUI {
     }
 
     renderSettings() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save();
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(0, 0, w, h);
@@ -272,7 +272,7 @@ class SkyUI {
     }
 
     renderAccountLogin() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save(); ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(0, 0, w, h);
         ctx.textAlign = 'center';
@@ -312,7 +312,7 @@ class SkyUI {
     }
 
     renderAccountRegister() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save(); ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(0, 0, w, h);
         ctx.textAlign = 'center';
@@ -356,7 +356,7 @@ class SkyUI {
     }
 
     renderAccountProfile() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         const storage = this.game.storage;
         ctx.save(); ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(0, 0, w, h);
@@ -383,7 +383,7 @@ class SkyUI {
     }
 
     renderAbout() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save();
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(0, 0, w, h);
@@ -435,7 +435,7 @@ class SkyUI {
     }
 
     renderPlaneSelect() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save();
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(0, 0, w, h);
@@ -467,7 +467,7 @@ class SkyUI {
     }
 
     renderUpgradeMenu() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save();
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(0, 0, w, h);
@@ -504,7 +504,7 @@ class SkyUI {
     }
 
     renderHUD() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height; const p = this.game.player;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH; const p = this.game.player;
         ctx.save();
         ctx.textBaseline = 'top';
 
@@ -565,7 +565,7 @@ class SkyUI {
 
     renderBossBar() {
         if (!this.game.boss || !this.game.boss.active) return;
-        const ctx = this.ctx; const w = this.canvas.width; const boss = this.game.boss;
+        const ctx = this.ctx; const w = this.game.logicalW; const boss = this.game.boss;
         ctx.save();
         ctx.textBaseline = 'middle';
         const barW = Math.min(this.sw(400), w - this.sx(40)); const barX = (w - barW) / 2; const barY = this.sy(45);
@@ -587,7 +587,7 @@ class SkyUI {
 
     renderBossWarning() {
         if (this.bossWarningTimer <= 0) return;
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         const alpha = Math.sin(this.bossWarningTimer * 8) * 0.5 + 0.5;
         ctx.save(); ctx.textBaseline = 'middle'; ctx.globalAlpha = alpha;
         ctx.fillStyle = '#ff0000'; ctx.shadowBlur = 40; ctx.shadowColor = '#ff0000';
@@ -600,7 +600,7 @@ class SkyUI {
     }
 
     renderGameOver() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height; const p = this.game.player;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH; const p = this.game.player;
         ctx.save();
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillRect(0, 0, w, h);
@@ -626,7 +626,7 @@ class SkyUI {
     }
 
     renderPause() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save(); ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(0, 0, w, h);
         ctx.textAlign = 'center'; ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff';
@@ -637,7 +637,7 @@ class SkyUI {
     }
 
     renderNotifications() {
-        const ctx = this.ctx; const w = this.canvas.width;
+        const ctx = this.ctx; const w = this.game.logicalW;
         ctx.save(); ctx.textBaseline = 'middle';
         this.notifications.forEach((n, i) => {
             const alpha = n.life / n.maxLife; const y = 110 + i * 26;
@@ -652,38 +652,26 @@ class SkyUI {
     renderMobileControls() {
         if (!this.game.controls.isMobile()) return;
         const ctx = this.ctx; const ctrl = this.game.controls; const jd = ctrl.getJoystickData();
-        const w = this.canvas.width; const h = this.canvas.height;
+        const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save();
-        const jr = this.sw(65);
-        const jx = this.sx(120); const jy = h - this.sy(130);
         if (jd.active) {
-            ctx.globalAlpha = 0.4; ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.arc(jd.centerX, jd.centerY, jd.baseRadius, 0, Math.PI * 2); ctx.stroke();
-            ctx.globalAlpha = 0.4; ctx.fillStyle = 'rgba(255,255,255,0.2)';
-            ctx.beginPath(); ctx.arc(jd.centerX, jd.centerY, jd.baseRadius, 0, Math.PI * 2); ctx.fill();
-            ctx.globalAlpha = 0.6; ctx.fillStyle = 'rgba(255,255,255,0.4)';
-            ctx.beginPath(); ctx.arc(jd.knobX, jd.knobY, this.sw(22), 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.arc(jd.knobX, jd.knobY, this.sw(22), 0, Math.PI * 2); ctx.stroke();
-        } else {
-            ctx.globalAlpha = 0.25; ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.arc(jx, jy, jr, 0, Math.PI * 2); ctx.stroke();
-            ctx.globalAlpha = 0.15; ctx.fillStyle = 'rgba(255,255,255,0.1)';
-            ctx.beginPath(); ctx.arc(jx, jy, jr, 0, Math.PI * 2); ctx.fill();
-            ctx.globalAlpha = 0.15; ctx.fillStyle = 'rgba(255,255,255,0.15)';
-            ctx.beginPath(); ctx.arc(jx, jy, this.sw(15), 0, Math.PI * 2); ctx.fill();
-            ctx.globalAlpha = 0.15; ctx.font = '18px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#ffffff'; ctx.fillText('+', jx, jy);
+            ctx.globalAlpha = 0.35; ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(jd.centerX, jd.centerY, jd.radius, 0, Math.PI * 2); ctx.stroke();
+            ctx.globalAlpha = 0.3; ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.beginPath(); ctx.arc(jd.centerX, jd.centerY, jd.radius, 0, Math.PI * 2); ctx.fill();
+            ctx.globalAlpha = 0.5; ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.beginPath(); ctx.arc(jd.knobX, jd.knobY, this.sw(18), 0, Math.PI * 2); ctx.fill();
         }
-        ctx.globalAlpha = 0.4; ctx.fillStyle = '#ffffff'; ctx.font = '24px monospace'; ctx.textBaseline = 'middle';
-        ctx.textAlign = 'center';
+        ctx.globalAlpha = 0.35; ctx.fillStyle = '#ffffff'; ctx.font = '24px monospace';
+        ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
         ctx.fillText('∥', w - this.sw(28), this.sy(28));
+        ctx.fillText('✕', this.sw(28), this.sy(28));
         ctx.restore();
     }
 
     renderLevelTransition() {
         if (!this.game.levelTransition) return;
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         const pulse = Math.sin(this.animTime * 3) * 0.15 + 0.85;
         ctx.save(); ctx.textBaseline = 'middle'; ctx.fillStyle = 'rgba(0,0,0,0.75)'; ctx.fillRect(0, 0, w, h);
         ctx.textAlign = 'center';
@@ -718,7 +706,7 @@ class SkyUI {
     }
 
     renderBackground() {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         const assets = window.gameAssets;
         this._initStars(w, h);
 
@@ -825,7 +813,7 @@ class SkyUI {
 
     renderTransition() {
         if (!this.transitioning) return;
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx; const w = this.game.logicalW; const h = this.game.logicalH;
         ctx.save();
         ctx.fillStyle = '#000000';
         ctx.globalAlpha = this.transitionAlpha > 0.5 ? (1 - this.transitionAlpha) * 2 : this.transitionAlpha * 2;
